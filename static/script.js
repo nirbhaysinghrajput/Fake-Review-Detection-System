@@ -1,9 +1,18 @@
+
 /**
  * script.js — Fake Review Detection System
- * Clean, lightweight controller for review submission, UI state, and result display.
+ * Includes anonymous Google Analytics event tracking.
  */
 
 document.addEventListener("DOMContentLoaded", () => {
+
+  // ─── Analytics Helper ──────────────────────────────────────
+  function trackEvent(eventName, parameters = {}) {
+    if (typeof window.gtag === "function") {
+      window.gtag("event", eventName, parameters);
+    }
+  }
+
   // ─── DOM Elements ──────────────────────────────────────────
   const reviewInput        = document.getElementById("reviewInput");
   const detectBtn          = document.getElementById("detectBtn");
@@ -62,6 +71,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // ─── Example Pills ─────────────────────────────────────────
   examplePills.forEach(pill => {
     pill.addEventListener("click", () => {
+
+      // Track example selection
+      trackEvent("example_clicked");
+
       const text = pill.getAttribute("data-review");
       if (text) {
         reviewInput.value = text;
@@ -94,6 +107,12 @@ document.addEventListener("DOMContentLoaded", () => {
     hideError();
     setLoading(true);
 
+    // Track valid review submission
+    trackEvent("review_submitted");
+
+    // Measure analysis duration
+    const analysisStartTime = Date.now();
+
     try {
       const response = await fetch("/predict", {
         method: "POST",
@@ -106,15 +125,35 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await response.json();
 
       if (!response.ok) {
+
+        // Track server/API failure
+        trackEvent("analysis_failed", {
+          failure_reason: "server_error",
+          status_code: response.status
+        });
+
         showError(data.error || "An error occurred while analyzing the review.");
         return;
       }
+
+      // Track successful analysis
+      trackEvent("analysis_completed", {
+        prediction_type: data.prediction === "Fake Review" ? "fake" : "genuine",
+        analysis_duration_ms: Date.now() - analysisStartTime
+      });
 
       // Display results
       renderResults(reviewText, data);
 
     } catch (err) {
+
+      // Track network or request failure
+      trackEvent("analysis_failed", {
+        failure_reason: "request_error"
+      });
+
       showError("Could not reach the server. Please verify the application is running.");
+
     } finally {
       setLoading(false);
     }
@@ -209,6 +248,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // ─── About Modal Handling ──────────────────────────────────
   if (aboutDialog && openAboutBtn) {
     openAboutBtn.addEventListener("click", () => {
+
+      // Track About section usage
+      trackEvent("about_opened");
+
       if (typeof aboutDialog.showModal === "function") {
         aboutDialog.showModal();
       } else {
@@ -234,4 +277,5 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
 });
