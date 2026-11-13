@@ -749,3 +749,11 @@ body {
   justify-content: center;
 }
 
+
+.hosting-notice {
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  text-align: center;
+}
