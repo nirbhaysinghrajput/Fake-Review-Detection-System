@@ -740,3 +740,12 @@ body {
     width: 100%;
   }
 }
+
+.feedback-btn {
+  margin-left: auto;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
