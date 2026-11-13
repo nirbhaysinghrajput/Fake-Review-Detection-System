@@ -14,8 +14,9 @@ nltk>=3.8
 pandas>=1.5.0
 numpy>=1.23.0
 
-# ── Web framework ──────────────────────────────────────────────
+# ── Web framework & WSGI Server ────────────────────────────────
 flask>=2.3.0
+gunicorn>=21.2.0
 
 # ── Utilities ──────────────────────────────────────────────────
 # Used to serialise/deserialise the Keras tokenizer

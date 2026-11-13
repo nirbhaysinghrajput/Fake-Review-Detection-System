@@ -121,9 +121,10 @@ if __name__ == "__main__":
     print("=" * 60)
     print("  Fake Review Detection — Flask Server")
     print("=" * 60)
-    print("  Open: http://127.0.0.1:5000")
+    port = int(os.environ.get("PORT", 5000))
+    print(f"  Listening on: http://0.0.0.0:{port}")
     print("  Press CTRL+C to stop.")
     print()
 
     # debug=False in production; set True only during development
-    app.run(host="127.0.0.1", port=5000, debug=False)
+    app.run(host="0.0.0.0", port=port, debug=False)
