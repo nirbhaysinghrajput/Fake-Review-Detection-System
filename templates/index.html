@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Fake Review Detection System — A clean, practical tool to analyze product reviews for authenticity." />
+  <title>Fake Review Detection</title>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+
+<body>
+
+  <!-- ── Top Navigation Bar ───────────────────────────────── -->
+  <nav class="top-nav" aria-label="Main Navigation">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <span class="brand-text">Fake Review Detection System</span>
+      </div>
+      <div class="nav-links">
+        <a href="/" class="nav-link active">Home</a>
+        <button id="openAboutBtn" type="button" class="nav-link nav-btn-link">About</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── Main Content Container ──────────────────────────── -->
+  <main class="main-container">
+
+    <!-- Header / Intro -->
+    <header class="page-header">
+      <h1 class="page-title">Fake Review Detection System</h1>
+      <p class="page-subtitle">Check whether a product review appears genuine or suspicious.</p>
+    </header>
+
+    <!-- Error Alert Box -->
+    <div id="errorMsg" class="alert alert-error" role="alert" hidden></div>
+
+    <!-- Review Input Card -->
+    <section class="form-card" aria-label="Review submission form">
+      <form id="reviewForm" onsubmit="return false;">
+        <div class="form-group">
+          <div class="label-row">
+            <label for="reviewInput" class="form-label">Review text</label>
+            <span id="charCount" class="char-count" aria-live="polite">0 / 2,000</span>
+          </div>
+
+          <textarea id="reviewInput" name="review" class="review-textarea"
+            placeholder="Enter or paste a product review here to analyze..." rows="6" maxlength="2000" required
+            aria-required="true" aria-describedby="charCount"></textarea>
+        </div>
+
+        <div class="action-row">
+          <button id="detectBtn" type="button" class="btn btn-primary"
+            aria-label="Detect whether this review is fake or genuine">
+            <span id="detectSpinner" class="btn-spinner" hidden aria-hidden="true"></span>
+            <span id="detectBtnText">Detect Review</span>
+          </button>
+
+          <button id="clearBtn" type="button" class="btn btn-tertiary" aria-label="Clear review input">
+            Clear
+          </button>
+        </div>
+      </form>
+
+      <!-- Example Reviews Section -->
+      <div class="examples-container">
+        <span class="examples-heading">Try an example:</span>
+        <div class="examples-list">
+          <button type="button" class="example-pill"
+            data-review="BEST PRODUCT EVER!!! BUY THIS NOW!!! Absolutely amazing!!! Everyone should buy it!!! 5 stars 5 stars 5 stars!!!">
+            Exaggerated promotional review
+          </button>
+          <button type="button" class="example-pill"
+            data-review="I bought this keyboard two weeks ago for work. The keys have good feedback, the build is solid, and battery life lasts about four days.">
+            Detailed genuine purchase
+          </button>
+          <button type="button" class="example-pill"
+            data-review="The packaging arrived damaged and customer support took three days to reply. The replacement unit works as expected.">
+            Critical feedback review
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Analysis Result Section ─────────────────────────── -->
+    <section id="resultSection" class="result-card" hidden aria-live="polite">
+      <div class="result-header">
+        <h2 class="result-title">Review Analysis</h2>
+        <span class="result-status-tag" id="analysisTag">Complete</span>
+      </div>
+
+      <!-- Reviewed text block -->
+      <div class="reviewed-block">
+        <span class="block-label">Review analyzed</span>
+        <blockquote id="reviewedTextDisplay" class="reviewed-quote"></blockquote>
+      </div>
+
+      <!-- Verdict and Confidence Block -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <span class="metric-label">Prediction</span>
+          <div id="verdictBadge" class="verdict-tag">
+            <span id="verdictDot" class="verdict-dot"></span>
+            <span id="verdictText" class="verdict-name">--</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header-row">
+            <span class="metric-label">Confidence</span>
+            <span id="confidencePercent" class="metric-value">--%</span>
+          </div>
+          <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+            aria-label="Confidence score">
+            <div id="confidenceBar" class="progress-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Probabilities Breakdown Table -->
+      <div class="breakdown-block">
+        <span class="block-label">Probability breakdown</span>
+        <div class="breakdown-table">
+          <div class="breakdown-row">
+            <span class="breakdown-name">Fake probability</span>
+            <span id="fakeProb" class="breakdown-val">--%</span>
+          </div>
+          <div class="breakdown-row">
+            <span class="breakdown-name">Genuine probability</span>
+            <span id="genuineProb" class="breakdown-val">--%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Supporting Pattern Reasons -->
+      <div class="reasons-block">
+        <h3 id="reasonsTitle" class="reasons-heading">Why this review was flagged</h3>
+        <ul id="patternsList" class="reasons-list">
+          <!-- Populated by JavaScript -->
+        </ul>
+      </div>
+
+      <!-- Action: Reset / Analyze another -->
+      <div class="result-actions">
+        <button id="analyzeAnotherBtn" type="button" class="btn btn-secondary">
+          Analyze Another Review
+        </button>
+      </div>
+    </section>
+
+    <!-- ── Page Footer ─────────────────────────────────────── -->
+    <footer class="page-footer">
+      <p>Fake Review Detection System</p>
+      <p class="footer-sub">Deep Learning &middot; Natural Language Processing &middot; Python &amp; Flask</p>
+    </footer>
+
+  </main>
+
+  <!-- ── Simple About Modal Dialog ────────────────────────── -->
+  <dialog id="aboutDialog" class="modal-dialog" aria-labelledby="aboutDialogTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="aboutDialogTitle" class="modal-title">About this system</h2>
+        <button id="closeAboutBtn" type="button" class="modal-close-btn" aria-label="Close dialog">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>
+          This is a college project designed to evaluate product and service reviews for authenticity.
+        </p>
+        <h4>How it works:</h4>
+        <ol>
+          <li><strong>Text Preprocessing:</strong> Lowercasing, punctuation and URL removal, stopword filtering with
+            sentiment preservation, and word normalization.</li>
+          <li><strong>Deep Learning Model:</strong> A Bidirectional LSTM neural network trained on balanced genuine and
+            deceptive reviews.</li>
+          <li><strong>Pattern Heuristics:</strong> Inspects writing traits such as excessive capitalization, urgent
+            promotional language, and repetitive terms.</li>
+        </ol>
+        <p class="modal-note">
+          Note: Predictions are probabilistic estimates intended for educational and analytical demonstration.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button id="dialogOkBtn" type="button" class="btn btn-secondary">Close</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="/static/script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,40 @@
+# ── Python ────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+
+# ── Virtual environments ──────────────────────────────────────
+venv/
+env/
+.venv/
+.env/
+
+# ── Model and tokenizer (large binary files) ─────────────────
+# Commented out so the lightweight pre-trained model and tokenizer are committed
+# model/fake_review_model.keras
+# model/tokenizer.pkl
+
+# ── Dataset (may contain sensitive data) ─────────────────────
+# dataset/reviews.csv
+
+# ── IDE and OS ────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Logs ─────────────────────────────────────────────────────
+*.log
+
+# ── TensorFlow / Keras ────────────────────────────────────────
+*.h5
+*.hdf5
+
+# ── Jupyter ───────────────────────────────────────────────────
+.ipynb_checkpoints/
